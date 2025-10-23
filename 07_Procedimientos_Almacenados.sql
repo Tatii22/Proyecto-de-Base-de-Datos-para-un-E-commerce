@@ -1,0 +1,21 @@
+
+    -- sp_RealizarNuevaVenta: Procesa una nueva venta de forma transaccional.
+    -- sp_AgregarNuevoProducto: Inserta un nuevo producto y sus atributos iniciales.
+    -- sp_ActualizarDireccionCliente: Actualiza la dirección de un cliente en todas las tablas relevantes.
+    -- sp_ProcesarDevolucion: Gestiona la devolución de un producto, ajustando el stock y generando un crédito.
+    -- sp_ObtenerHistorialComprasCliente: Devuelve el historial completo de compras de un cliente.
+    -- sp_AjustarNivelStock: Permite ajustar manualmente el stock de un producto, registrando el motivo.
+    -- sp_EliminarClienteDeFormaSegura: Anonimiza los datos de un cliente en lugar de borrarlos, para mantener la integridad referencial.
+    -- sp_AplicarDescuentoPorCategoria: Aplica un descuento a todos los productos de una categoría específica.
+    -- sp_GenerarReporteMensualVentas: Genera un reporte completo de ventas para un mes y año dados.
+    -- sp_CambiarEstadoPedido: Cambia el estado de un pedido (ej. 'Procesando' a 'Enviado') y notifica a otros sistemas.
+    -- sp_RegistrarNuevoCliente: Registra un nuevo cliente validando que el email no exista.
+    -- sp_ObtenerDetallesProductoCompleto: Devuelve toda la información de un producto, incluyendo datos de su proveedor y categoría.
+    -- sp_FusionarCuentasCliente: Fusiona dos cuentas de cliente duplicadas en una sola.
+    -- sp_AsignarProductoAProveedor: Asigna o cambia el proveedor de un producto.
+    -- sp_BuscarProductos: Realiza una búsqueda avanzada de productos con filtros por nombre, categoría, rango de precios, etc.
+    -- sp_ObtenerDashboardAdmin: Devuelve un conjunto de KPIs para un panel de administración (ventas de hoy, nuevos clientes, etc.).
+    -- sp_ProcesarPago: Simula el procesamiento de un pago para una venta, actualizando su estado a "Pagado".
+    -- sp_AñadirReseñaProducto: Permite a un cliente añadir una reseña y calificación a un producto que ha comprado.
+    -- sp_ObtenerProductosRelacionados: Devuelve una lista de productos relacionados a uno dado, basándose en compras de otros clientes.
+    -- sp_MoverProductosEntreCategorias: Mueve uno o más productos de una categoría a otra de forma segura.

@@ -1,0 +1,20 @@
+    -- Crear el rol Administrador_Sistema con todos los privilegios.
+    -- Crear el rol Gerente_Marketing con acceso de solo lectura a ventas y clientes.
+    -- Crear el rol Analista_Datos con acceso de solo lectura a todas las tablas, excepto a las de auditoría.
+    -- Crear el rol Empleado_Inventario que solo pueda modificar la tabla productos (stock y ubicación).
+    -- Crear el rol Atencion_Cliente que pueda ver clientes y ventas, pero no modificar precios.
+    -- Crear el rol Auditor_Financiero con acceso de solo lectura a ventas, productos y logs de precios.
+    -- Crear un usuario admin_user y asignarle el rol de administrador.
+    -- Crear un usuario marketing_user y asignarle el rol de marketing.
+    -- Crear un usuario inventory_user y asignarle el rol de inventario.
+    -- Crear un usuario support_user y asignarle el rol de atención al cliente.
+    -- Impedir que el rol Analista_Datos pueda ejecutar comandos DELETE o TRUNCATE.
+    -- Otorgar al rol Gerente_Marketing permiso para ejecutar procedimientos almacenados de reportes de marketing.
+    -- Crear una vista v_info_clientes_basica que oculte información sensible y dar acceso a ella al rol Atencion_Cliente.
+    -- Revocar el permiso de UPDATE sobre la columna precio de la tabla productos al rol Empleado_Inventario.
+    -- Implementar una política de contraseñas seguras para todos los usuarios.
+    -- Asegurar que el usuario root no pueda ser usado desde conexiones remotas.
+    -- Crear un rol Visitante que solo pueda ver la tabla productos.
+    -- Limitar el número de consultas por hora para el rol Analista_Datos para evitar sobrecarga.
+    -- Asegurar que los usuarios solo puedan ver las ventas de la sucursal a la que pertenecen (requiere añadir id_sucursal).
+    -- -- Auditar todos los intentos de inicio de sesión fallidos en la base de datos.

@@ -1,0 +1,22 @@
+    -- trg_audit_precio_producto_after_update: Guarda un log de cambios de precios.
+    -- trg_check_stock_before_insert_venta: Verifica el stock antes de registrar una venta.
+    -- trg_update_stock_after_insert_venta: Decrementa el stock después de una venta.
+    -- trg_prevent_delete_categoria_with_products: Impide eliminar una categoría si tiene productos asociados.
+    -- trg_log_new_customer_after_insert: Registra en una tabla de auditoría cada vez que se crea un nuevo cliente.
+    -- trg_update_total_gastado_cliente: Actualiza un campo total_gastado en la tabla clientes después de cada compra.
+    -- trg_set_fecha_modificacion_producto: Actualiza automáticamente la fecha de última modificación de un producto.
+    -- trg_prevent_negative_stock: Impide que el stock de un producto se actualice a un valor negativo.
+    -- trg_capitalize_nombre_cliente: Convierte a mayúscula la primera letra del nombre y apellido de un cliente al insertarlo.
+    -- trg_recalculate_total_venta_on_detalle_change: Recalcula el total en la tabla ventas si se modifica un detalle_venta.
+    -- trg_log_order_status_change: Audita cada cambio de estado en un pedido (ej. de 'Procesando' a 'Enviado').
+    -- trg_prevent_price_zero_or_less: Impide que el precio de un producto se establezca en cero o un valor negativo.
+    -- trg_send_stock_alert_on_low_stock: Inserta un registro en una tabla alertas si el stock baja de un umbral.
+    -- trg_archive_deleted_venta: Mueve una venta eliminada a una tabla de archivo en lugar de borrarla permanentemente.
+    -- trg_validate_email_format_on_customer: Valida el formato del email antes de insertar o actualizar un cliente.
+    -- trg_update_last_order_date_customer: Actualiza la fecha del último pedido en la tabla clientes.
+    -- trg_prevent_self_referral: Impide que un cliente se referencie a sí mismo en un programa de referidos.
+    -- trg_log_permission_changes: Audita los cambios en los permisos de los usuarios.
+    -- trg_assign_default_category_on_null: Asigna una categoría "General" si se inserta un producto sin categoría.
+    -- trg_update_producto_count_in_categoria: Mantiene un contador de cuántos productos hay en cada categoría.
+
+

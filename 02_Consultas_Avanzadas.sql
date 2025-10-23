@@ -1,0 +1,22 @@
+    -- Top 10 Productos Más Vendidos: Generar un ranking con los 10 productos que han generado más ingresos.
+    -- Productos con Bajas Ventas: Identificar los productos en el 10% inferior de ventas para considerar su descontinuación.
+    -- Clientes VIP: Listar los 5 clientes con el mayor valor de vida (LTV), basado en su gasto total histórico.
+    -- Análisis de Ventas Mensuales: Mostrar las ventas totales agrupadas por mes y año.
+    -- Crecimiento de Clientes: Calcular el número de nuevos clientes registrados por trimestre.
+    -- Tasa de Compra Repetida: Determinar qué porcentaje de clientes ha realizado más de una compra.
+    -- Productos Comprados Juntos Frecuentemente: Identificar pares de productos que a menudo se compran en la misma transacción.
+    -- Rotación de Inventario: Calcular la tasa de rotación de stock para cada categoría de producto.
+    -- Productos que Necesitan Reabastecimiento: Listar productos cuyo stock actual está por debajo de su umbral mínimo.
+    -- Análisis de Carrito Abandonado (Simulado): Identificar clientes que agregaron productos pero no completaron una venta en un período determinado.
+    -- Rendimiento de Proveedores: Clasificar a los proveedores según el volumen de ventas de sus productos.
+    -- Análisis Geográfico de Ventas: Agrupar las ventas por ciudad o región del cliente.
+    -- Ventas por Hora del Día: Determinar las horas pico de compras para optimizar campañas de marketing.
+    -- Impacto de Promociones: Comparar las ventas de un producto antes, durante y después de una campaña de descuento.
+    -- Análisis de Cohort: Analizar la retención de clientes mes a mes desde su primera compra.
+    -- Margen de Beneficio por Producto: Calcular el margen de beneficio para cada producto (requiere añadir un campo costo a la tabla productos).
+    -- Tiempo Promedio Entre Compras: Calcular el tiempo medio que tarda un cliente en volver a comprar.
+    -- Productos Más Vistos vs. Comprados: Comparar los productos más visitados con los más comprados.
+    -- Segmentación de Clientes (RFM): Clasificar a los clientes en segmentos (Recencia, Frecuencia, Monetario).
+    -- Predicción de Demanda Simple: Utilizar datos de ventas pasadas para proyectar las ventas del próximo mes para una categoría específica.
+
+
