@@ -181,13 +181,14 @@ CREATE TABLE auditoria_clientes (
   FOREIGN KEY (id_usuario_fk) REFERENCES usuarios_bd(id_usuario)
 ) ENGINE=InnoDB;
 
+
 CREATE TABLE alertas_stock (
-  id_alerta INT AUTO_INCREMENT PRIMARY KEY,
-  mensaje VARCHAR(255) NOT NULL,
-  fecha DATETIME NOT NULL,
-  estado ENUM('Pendiente', 'Atendida') NOT NULL DEFAULT 'Pendiente',
-  id_producto_fk INT NOT NULL,
-  FOREIGN KEY (id_producto_fk) REFERENCES productos(id_producto)
+    id_alerta INT AUTO_INCREMENT PRIMARY KEY,
+    mensaje VARCHAR(255) NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('Pendiente', 'Resuelto') DEFAULT 'Pendiente',
+    id_producto_fk INT NOT NULL,
+    FOREIGN KEY (id_producto_fk) REFERENCES productos(id_producto)
 ) ENGINE=InnoDB;
 
 CREATE TABLE ventas_archivo (
