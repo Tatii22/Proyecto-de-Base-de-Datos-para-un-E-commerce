@@ -1,20 +1,150 @@
-    -- Crear el rol Administrador_Sistema con todos los privilegios.
-    -- Crear el rol Gerente_Marketing con acceso de solo lectura a ventas y clientes.
-    -- Crear el rol Analista_Datos con acceso de solo lectura a todas las tablas, excepto a las de auditoría.
-    -- Crear el rol Empleado_Inventario que solo pueda modificar la tabla productos (stock y ubicación).
-    -- Crear el rol Atencion_Cliente que pueda ver clientes y ventas, pero no modificar precios.
-    -- Crear el rol Auditor_Financiero con acceso de solo lectura a ventas, productos y logs de precios.
-    -- Crear un usuario admin_user y asignarle el rol de administrador.
-    -- Crear un usuario marketing_user y asignarle el rol de marketing.
-    -- Crear un usuario inventory_user y asignarle el rol de inventario.
-    -- Crear un usuario support_user y asignarle el rol de atención al cliente.
-    -- Impedir que el rol Analista_Datos pueda ejecutar comandos DELETE o TRUNCATE.
-    -- Otorgar al rol Gerente_Marketing permiso para ejecutar procedimientos almacenados de reportes de marketing.
-    -- Crear una vista v_info_clientes_basica que oculte información sensible y dar acceso a ella al rol Atencion_Cliente.
-    -- Revocar el permiso de UPDATE sobre la columna precio de la tabla productos al rol Empleado_Inventario.
-    -- Implementar una política de contraseñas seguras para todos los usuarios.
-    -- Asegurar que el usuario root no pueda ser usado desde conexiones remotas.
-    -- Crear un rol Visitante que solo pueda ver la tabla productos.
-    -- Limitar el número de consultas por hora para el rol Analista_Datos para evitar sobrecarga.
-    -- Asegurar que los usuarios solo puedan ver las ventas de la sucursal a la que pertenecen (requiere añadir id_sucursal).
-    -- -- Auditar todos los intentos de inicio de sesión fallidos en la base de datos.
+
+-- SEGURIDAD Y PERMISOS PARA MI TIENDA
+
+USE `proyecto_ecommerce`;
+
+-- 1. CREAR ROL ADMINISTRADOR_SISTEMA CON TODOS LOS PRIVILEGIOS
+-- El administrador puede hacer todo
+
+CREATE ROLE IF NOT EXISTS 'Administrador_Sistema'@'localhost';
+CREATE ROLE IF NOT EXISTS 'Administrador_Sistema'@'%';
+
+-- Le doy todos los permisos al administrador
+GRANT ALL PRIVILEGES ON proyecto_ecommerce.* TO 'Administrador_Sistema'@'localhost';
+GRANT ALL PRIVILEGES ON proyecto_ecommerce.* TO 'Administrador_Sistema'@'%';
+
+-- 2. CREAR ROL GERENTE_MARKETING CON ACCESO DE SOLO LECTURA A VENTAS Y CLIENTES
+-- El gerente de marketing solo puede ver datos, no modificar
+
+CREATE ROLE IF NOT EXISTS 'Gerente_Marketing'@'localhost';
+CREATE ROLE IF NOT EXISTS 'Gerente_Marketing'@'%';
+
+-- Solo puede leer las tablas de ventas y clientes
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Gerente_Marketing'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Gerente_Marketing'@'%';
+GRANT SELECT ON proyecto_ecommerce.clientes TO 'Gerente_Marketing'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.clientes TO 'Gerente_Marketing'@'%';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Gerente_Marketing'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Gerente_Marketing'@'%';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Gerente_Marketing'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Gerente_Marketing'@'%';
+GRANT SELECT ON proyecto_ecommerce.categorias TO 'Gerente_Marketing'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.categorias TO 'Gerente_Marketing'@'%';
+GRANT SELECT ON proyecto_ecommerce.promociones TO 'Gerente_Marketing'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.promociones TO 'Gerente_Marketing'@'%';
+GRANT SELECT ON proyecto_ecommerce.promociones_producto TO 'Gerente_Marketing'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.promociones_producto TO 'Gerente_Marketing'@'%';
+
+-- 3. CREAR ROL ANALISTA_DATOS CON ACCESO DE SOLO LECTURA A TODAS LAS TABLAS, EXCEPTO AUDITORiA
+
+CREATE ROLE IF NOT EXISTS 'Analista_Datos'@'localhost';
+CREATE ROLE IF NOT EXISTS 'Analista_Datos'@'%';
+
+-- Permisos de solo lectura para todas las tablas principales
+GRANT SELECT ON proyecto_ecommerce.proveedores TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.proveedores TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.categorias TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.categorias TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.paises TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.paises TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.ciudades TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.ciudades TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.barrios TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.barrios TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.clientes TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.clientes TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.sucursales TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.sucursales TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.envios TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.envios TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.carritos TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.carritos TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.productos_carritos TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.productos_carritos TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.promociones TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.promociones TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.promociones_producto TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.promociones_producto TO 'Analista_Datos'@'%';
+GRANT SELECT ON proyecto_ecommerce.reseñas TO 'Analista_Datos'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.reseñas TO 'Analista_Datos'@'%';
+
+-- 4. CREAR ROL EMPLEADO_INVENTARIO QUE SOLO PUEDA MODIFICAR LA TABLA PRODUCTOS (STOCK Y UBICACIoN)
+
+CREATE ROLE IF NOT EXISTS 'Empleado_Inventario'@'localhost';
+CREATE ROLE IF NOT EXISTS 'Empleado_Inventario'@'%';
+
+-- Permisos para leer y modificar solo campos especificos de productos
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Empleado_Inventario'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Empleado_Inventario'@'%';
+GRANT SELECT ON proyecto_ecommerce.categorias TO 'Empleado_Inventario'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.categorias TO 'Empleado_Inventario'@'%';
+GRANT SELECT ON proyecto_ecommerce.proveedores TO 'Empleado_Inventario'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.proveedores TO 'Empleado_Inventario'@'%';
+
+-- Permisos limitados para actualizar solo stock y campos relacionados
+GRANT UPDATE (stock, stock_minimo, activo) ON proyecto_ecommerce.productos TO 'Empleado_Inventario'@'localhost';
+GRANT UPDATE (stock, stock_minimo, activo) ON proyecto_ecommerce.productos TO 'Empleado_Inventario'@'%';
+
+-- 5. CREAR ROL ATENCION_CLIENTE QUE PUEDA VER CLIENTES Y VENTAS, PERO NO MODIFICAR PRECIOS
+
+CREATE ROLE IF NOT EXISTS 'Atencion_Cliente'@'localhost';
+CREATE ROLE IF NOT EXISTS 'Atencion_Cliente'@'%';
+
+-- Permisos de lectura para clientes y ventas
+GRANT SELECT ON proyecto_ecommerce.clientes TO 'Atencion_Cliente'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.clientes TO 'Atencion_Cliente'@'%';
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Atencion_Cliente'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Atencion_Cliente'@'%';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Atencion_Cliente'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Atencion_Cliente'@'%';
+GRANT SELECT ON proyecto_ecommerce.envios TO 'Atencion_Cliente'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.envios TO 'Atencion_Cliente'@'%';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Atencion_Cliente'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Atencion_Cliente'@'%';
+
+-- Permisos limitados para actualizar solo informacion de clientes (no precios)
+GRANT UPDATE (nombre, apellido, email, telefono_contacto, fecha_nacimiento) ON proyecto_ecommerce.clientes TO 'Atencion_Cliente'@'localhost';
+GRANT UPDATE (nombre, apellido, email, telefono_contacto, fecha_nacimiento) ON proyecto_ecommerce.clientes TO 'Atencion_Cliente'@'%';
+GRANT UPDATE (estado) ON proyecto_ecommerce.ventas TO 'Atencion_Cliente'@'localhost';
+GRANT UPDATE (estado) ON proyecto_ecommerce.ventas TO 'Atencion_Cliente'@'%';
+GRANT UPDATE (estado_envio) ON proyecto_ecommerce.envios TO 'Atencion_Cliente'@'localhost';
+GRANT UPDATE (estado_envio) ON proyecto_ecommerce.envios TO 'Atencion_Cliente'@'%';
+
+-- 6. CREAR ROL AUDITOR_FINANCIERO CON ACCESO DE SOLO LECTURA A VENTAS, PRODUCTOS Y LOGS DE PRECIOS
+
+CREATE ROLE IF NOT EXISTS 'Auditor_Financiero'@'localhost';
+CREATE ROLE IF NOT EXISTS 'Auditor_Financiero'@'%';
+
+-- Permisos de solo lectura para auditoria financiera
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Auditor_Financiero'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.ventas TO 'Auditor_Financiero'@'%';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Auditor_Financiero'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.detalle_ventas TO 'Auditor_Financiero'@'%';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Auditor_Financiero'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.productos TO 'Auditor_Financiero'@'%';
+GRANT SELECT ON proyecto_ecommerce.auditoria_precios TO 'Auditor_Financiero'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.auditoria_precios TO 'Auditor_Financiero'@'%';
+GRANT SELECT ON proyecto_ecommerce.ventas_archivo TO 'Auditor_Financiero'@'localhost';
+GRANT SELECT ON proyecto_ecommerce.ventas_archivo TO 'Auditor_Financiero'@'%';
+
+-- 7. CREAR USUARIO ADMIN_USER Y ASIGNARLE EL ROL DE ADMINISTRADOR
+
+CREATE USER IF NOT EXISTS 'admin_user'@'localhost' IDENTIFIED BY 'AdminSecure123!';
+CREATE USER IF NOT EXISTS 'admin_user'@'%' IDENTIFIED BY 'AdminSecure123!';
+
+-- Asignar rol de administrador
+GRANT 'Administrador_Sistema'@'localhost' TO 'admin_user'@'localhost';
+GRANT 'Administrador_Sistema'@'%' TO 'admin_user'@'%';
+
+-- Activar roles por defecto
+ALTER USER 'admin_user'@'localhost' DEFAULT ROLE 'Administrador_Sistema'@'localhost';
+ALTER USER 'admin_user'@'%' DEFAULT ROLE 'Administrador_Sistema'@'%';
+
+-- APLICAR TODOS LOS CAMBIOS
+FLUSH PRIVILEGES;

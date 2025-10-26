@@ -109,7 +109,7 @@ CREATE TABLE envios (
   codigo_rastreo VARCHAR(45) NOT NULL UNIQUE,
   fecha_envio DATETIME NOT NULL,
   fecha_entrega DATETIME NOT NULL,
-  estado_envio ENUM('Preparando', 'En tránsito', 'Entregado', 'Devuelto'),
+  estado_envio ENUM('Preparando', 'En transito', 'Entregado', 'Devuelto'),
   id_venta_fk INT NOT NULL,
   id_barrio_fk INT NOT NULL,
   FOREIGN KEY (id_venta_fk) REFERENCES ventas(id_venta),
