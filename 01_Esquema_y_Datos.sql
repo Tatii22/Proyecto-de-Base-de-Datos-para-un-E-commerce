@@ -430,12 +430,13 @@ VALUES
 
 
 -- INSERTS PARA DETALLE_VENTAS (5)
-INSERT INTO ventas (id_cliente_fk, id_sucursal_fk, fecha_venta, total) VALUES
-(1, 1, '2025-01-05 14:23:10', 107.09),  
-(2, 2, '2025-01-06 16:32:25', 154.11),   
-(3, 3, '2025-01-07 18:49:12', 35.70),    
-(4, 4, '2025-01-08 12:05:45', 205.85),   
-(5, 5, '2025-01-09 09:43:30', 142.80); 
+INSERT INTO detalle_ventas (id_venta_fk, id_producto_fk, cantidad, precio_unitario_congelado, iva_porcentaje_aplicado, subtotal, total_linea)
+VALUES
+(1, 1, 2, 45000, 19, 90000, 107100),
+(2, 2, 1, 120000, 19, 120000, 142800),
+(3, 4, 3, 10000, 19, 30000, 35700),
+(4, 5, 2, 95000, 19, 190000, 226100),
+(5, 3, 1, 110000, 19, 110000, 130900); 
 
 -- INSERTS PARA ENVIOS (5)
 INSERT INTO envios (direccion_envio, codigo_rastreo, fecha_envio, fecha_entrega, estado_envio, id_venta_fk, id_barrio_fk)
