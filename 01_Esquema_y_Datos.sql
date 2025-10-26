@@ -33,7 +33,7 @@ CREATE TABLE proveedores (
 CREATE TABLE categorias (
   id_categoria INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL,
-  descripcion TEXT(500)
+  descripcion TEXT
 ) ENGINE=InnoDB;
 
 CREATE TABLE productos (
@@ -43,8 +43,8 @@ CREATE TABLE productos (
   precio DECIMAL(10,2) NOT NULL DEFAULT 0 CHECK (precio >= 0),
   iva DECIMAL(6,2) CHECK (iva BETWEEN 0 AND 100),
   costo DECIMAL(10,2) NOT NULL DEFAULT 0 CHECK (costo >= 0),
-  stock DECIMAL(10,2) NOT NULL DEFAULT 0 CHECK (stock >= 0),
-  stock_minimo DECIMAL(10,2) CHECK (stock_minimo >= 0),
+  stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0),
+  stock_minimo INT CHECK (stock_minimo >= 0),
   sku VARCHAR(50) NOT NULL UNIQUE,
   fecha_creacion DATETIME NOT NULL,
   activo TINYINT NOT NULL CHECK (activo IN (0,1)),
@@ -105,12 +105,12 @@ CREATE TABLE detalle_ventas (
 ) ENGINE=InnoDB;
 
 CREATE TABLE envios (
-  id_envios INT AUTO_INCREMENT PRIMARY KEY,
+  id_envio INT AUTO_INCREMENT PRIMARY KEY,
   direccion_envio VARCHAR(45) NOT NULL,
   codigo_rastreo VARCHAR(45) NOT NULL UNIQUE,
   fecha_envio DATETIME NOT NULL,
-  fecha_entrega DATETIME NOT NULL,
-  estado_envio ENUM('Preparando', 'Entransito', 'Entregado', 'Devuelto','Cancelado'),
+  fecha_entrega DATETIME,
+  estado_envio ENUM('Preparando', 'Entransito', 'Entregado', 'Devuelto', 'Cancelado'),
   id_venta_fk INT NOT NULL,
   id_barrio_fk INT NOT NULL,
   FOREIGN KEY (id_venta_fk) REFERENCES ventas(id_venta),
@@ -118,7 +118,7 @@ CREATE TABLE envios (
 ) ENGINE=InnoDB;
 
 CREATE TABLE carritos (
-  id_carritos INT AUTO_INCREMENT PRIMARY KEY,
+  id_carrito INT AUTO_INCREMENT PRIMARY KEY,
   fecha_creacion DATETIME NOT NULL,
   fecha_cierre DATETIME NOT NULL,
   estado ENUM('Abierto', 'Convertido', 'Abandonado') NOT NULL,
@@ -128,11 +128,11 @@ CREATE TABLE carritos (
 
 CREATE TABLE productos_carritos (
   id_producto_fk INT NOT NULL,
-  id_carritos_fk INT NOT NULL,
+  id_carrito_fk INT NOT NULL,
   cantidad INT NOT NULL DEFAULT 1 CHECK (cantidad > 0),
-  PRIMARY KEY (id_producto_fk, id_carritos_fk),
+  PRIMARY KEY (id_producto_fk, id_carrito_fk),
   FOREIGN KEY (id_producto_fk) REFERENCES productos(id_producto),
-  FOREIGN KEY (id_carritos_fk) REFERENCES carritos(id_carritos)
+  FOREIGN KEY (id_carrito_fk) REFERENCES carritos(id_carrito)
 ) ENGINE=InnoDB;
 
 CREATE TABLE promociones (
@@ -171,7 +171,7 @@ CREATE TABLE usuarios_bd (
 ) ENGINE=InnoDB;
 
 CREATE TABLE auditoria_clientes (
-  id_auditoria INT NOT NULL PRIMARY KEY,
+  id_auditoria INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
   accion ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
   fecha_evento DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   usuario VARCHAR(100),
@@ -228,188 +228,168 @@ CREATE TABLE reseñas (
 
 -- INSERTS PARA PAISES (20)
 INSERT INTO paises (pais) VALUES
-('Colombia'), 
-('México'), 
-('Argentina'), 
-('Chile'), 
-('Perú'),
-('Brasil'), 
-('Ecuador'), 
-('Uruguay'), 
-('Paraguay'), 
-('Bolivia'),
-('España'), 
-('Portugal'), 
-('Francia'), 
-('Italia'), 
-('Alemania'),
-('Estados Unidos'), 
-('Canadá'), 
-('Japón'), 
-('China'), 
-('Corea del Sur');
+('Colombia');
 
 -- INSERTS PARA CIUDADES (20)
 INSERT INTO ciudades (ciudad, num_dia, id_pais_fk) VALUES
-('Bogotá', 1, 1), 
-('Medellín', 2, 1), 
-('Cali', 3, 1), 
-('Ciudad de México', 4, 2), 
-('Guadalajara', 5, 2),
-('Buenos Aires', 6, 3), 
-('Rosario', 7, 3), 
-('Santiago', 8, 4), 
-('Lima', 9, 5), 
-('Río de Janeiro', 10, 6),
-('Quito', 11, 7), 
-('Montevideo', 12, 8), 
-('Asunción', 13, 9), 
-('La Paz', 14, 10), 
-('Madrid', 15, 11),
-('Lisboa', 16, 12), 
-('París', 17, 13), 
-('Roma', 18, 14), 
-('Berlín', 19, 15), 
-('New York', 20, 16);
+('Bogotá', 1, 1),
+('Medellín', 2, 1),
+('Cali', 2, 1),
+('Barranquilla', 3, 1),
+('Bucaramanga', 2, 1),
+('Cartagena', 3, 1),
+('Pereira', 2, 1),
+('Manizales', 2, 1),
+('Cúcuta', 3, 1),
+('Santa Marta', 3, 1),
+('Ibagué', 2, 1),
+('Villavicencio', 2, 1),
+('Pasto', 4, 1),
+('Montería', 3, 1),
+('Neiva', 2, 1),
+('Tunja', 1, 1),
+('Popayán', 3, 1),
+('Sincelejo', 3, 1),
+('Armenia', 2, 1),
+('Valledupar', 3, 1);
 
 -- INSERTS PARA BARRIOS (20)
 INSERT INTO barrios (barrio, id_ciudad_fk) VALUES
-('Chapinero', 1), 
-('El Poblado', 2), 
-('San Antonio', 3), 
-('Polanco', 4), 
-('Tlaquepaque', 5),
-('Palermo', 6), 
-('Centro', 7), 
-('Providencia', 8), 
-('Miraflores', 9), 
-('Copacabana', 10),
-('La Floresta', 11), 
-('Pocitos', 12), 
-('Villa Morra', 13), 
-('Sopocachi', 14), 
-('Salamanca', 15),
-('Belém', 16), 
-('Montmartre', 17), 
-('Trastevere', 18), 
-('Tiergarten', 19), 
-('Brooklyn', 20);
+('Cabecera del Llano', 5),
+('Provenza', 5),
+('Real de Minas', 5),
+('San Alonso', 5),
+('Sotomayor', 5),
+('Chapinero', 1),
+('El Poblado', 2),
+('San Fernando', 3),
+('El Prado', 4),
+('Cabecera del Llano', 5),
+('Bocagrande', 6),
+('La Riviera', 7),
+('Los Alpes', 8),
+('Palogrande', 9),
+('Rodadero', 10),
+('Cadiz', 11),
+('La Esperanza', 12),
+('Las Palmas', 13),
+('La Castellana', 14),
+('Campanario', 15),
+('San Andrés', 16),
+('La Ford', 17),
+('La María', 18),
+('La Clarita', 19),
+('Doce de Octubre', 20);
+
 
 -- INSERTS PARA PROVEEDORES (20)
 INSERT INTO proveedores (nombre, email_contacto, telefono_contacto) VALUES
-('Distribuciones Andina S.A.S.', 'ventas@andina.com.co', '3174526890'),
-('TecnoGlobal Ltda.', 'contacto@tecnoglobal.com', '3109823456'),
-('Suministros del Norte', 'info@suminorte.co', '3167451230'),
-('Grupo Alimentos Rivera', 'pedidos@alimentosrivera.com', '3136048927'),
-('Insumos Médicos del Oriente', 'contacto@insumosoriente.co', '3142097856'),
-('Papelería Universal', 'ventas@papeleriauniversal.com', '3186001743'),
-('ConstruMarket S.A.', 'contacto@constru-market.com', '3209875643'),
-('Energías del Futuro', 'ventas@enerfuturo.com', '3126009451'),
-('Ferretería El Tornillo Feliz', 'atencion@tornillofeliz.co', '3115632048'),
-('Textiles Bucaramanga', 'ventas@textibuca.com', '3154729681'),
-('Distribuidora Gourmet', 'info@dgourmet.co', '3168904321'),
-('Computec Solutions', 'contacto@computecsoluciones.com', '3198756043'),
-('LimpioMax S.A.S.', 'ventas@limpiomax.com', '3126984750'),
-('RefriAndes', 'contacto@refriandes.co', '3108963471'),
-('AgroCampo Ltda.', 'ventas@agrocampo.co', '3176054892'),
-('ElectroHogar', 'soporte@electrohogar.com', '3147098653'),
-('Maderas del Sur', 'ventas@maderadelsur.com', '3158906742'),
-('Impresiones Digitales 3D', 'info@id3d.co', '3125689470'),
-('Químicos del Caribe', 'contacto@quimcaribe.com', '3207658491'),
-('Logística Express', 'servicio@logisticaexpress.co', '3137852049');
+('Moda Andina S.A.S.', 'contacto@modaandina.com', '3174526890'),
+('Estilo Urbano Ltda.', 'ventas@estilourbano.com', '3109823456'),
+('Textiles del Norte', 'info@textilesnorte.co', '3167451230'),
+('Eleganza Boutique', 'ventas@eleganzaboutique.com', '3136048927'),
+('Belleza & Fragancias S.A.', 'contacto@byffragancias.com', '3142097856'),
+('Artesanías de Colombia', 'ventas@artesaniascolombia.com', '3186001743'),
+('Diseños del Caribe', 'contacto@discaribe.co', '3209875643'),
+('CueroFino Ltda.', 'ventas@cuerofino.com', '3126009451'),
+('Sombreros del Sol', 'atencion@sombrerosdelsol.com', '3115632048'),
+('TextilVargas S.A.', 'ventas@textilvargas.com', '3154729681'),
+('Distribuidora FashionLine', 'info@fashionline.co', '3168904321'),
+('Perfumería Selecta', 'contacto@perfumeriaselecta.com', '3198756043'),
+('Lencería IntimaLux', 'ventas@intimalux.com', '3126984750'),
+('Accesorios Glamour', 'contacto@glamouracc.com', '3108963471'),
+('Boutique Primavera', 'ventas@boutiqueprimavera.com', '3176054892'),
+('Calzado Elite S.A.S.', 'soporte@calzadoelite.com', '3147098653'),
+('Diseños Clásicos', 'ventas@disenosclasicos.co', '3158906742'),
+('Joyas del Alma', 'info@joyasdelalma.com', '3125689470'),
+('Fragancias del Mundo', 'contacto@fraganciasmundo.com', '3207658491'),
+('Moda Express', 'servicio@modaexpress.co', '3137852049');
+
 
 -- INSERTS PARA CATEGORIAS (20)
 INSERT INTO categorias (nombre, descripcion) VALUES
-('Tecnología', 'Artículos electrónicos'),
-('Hogar', 'Decoración y electrodomésticos'),
-('Ropa', 'Prendas de vestir'),
-('Calzado', 'Zapatos de todo tipo'),
-('Deportes', 'Equipamiento deportivo'),
-('Belleza', 'Productos de cuidado personal'),
-('Juguetería', 'Juegos y juguetes'),
-('Herramientas', 'Instrumentos para trabajo'),
-('Automotriz', 'Accesorios de vehículos'),
-('Jardinería', 'Artículos para jardines'),
-('Electrodomésticos', 'Productos para el hogar'),
-('Oficina', 'Útiles y escritorio'),
-('Librería', 'Libros y cuadernos'),
-('Música', 'Instrumentos y accesorios'),
-('Bebés', 'Artículos para bebé'),
-('Mascotas', 'Productos para animales'),
-('Salud', 'Bienestar y farmacia'),
-('Videojuegos', 'Consolas y juegos'),
-('Iluminación', 'Lámparas y focos'),
-('Arte', 'Material artístico');
+('Ropa de Mujer', 'Blusas, vestidos, faldas, pantalones y chaquetas para dama.'),
+('Ropa de Hombre', 'Camisas, pantalones, chaquetas y prendas casuales para caballero.'),
+('Calzado', 'Zapatos, sandalias, botas y tacones para dama y caballero.'),
+('Bolsos y Carteras', 'Bolsos, carteras y mochilas de moda.'),
+('Joyería y Accesorios', 'Collares, aretes, pulseras, anillos y relojes.'),
+('Perfumes y Fragancias', 'Perfumes para dama y caballero, colonias y sprays.'),
+('Ropa Unisex', 'Prendas cómodas y modernas para cualquier género.'),
+('Sombreros y Gorras', 'Accesorios de cabeza: gorras, sombreros y boinas.'),
+('Bufandas y Guantes', 'Accesorios de temporada para invierno.'),
+('Cinturones', 'Cinturones de cuero, tela y materiales sintéticos.'),
+('Lencería y Pijamas', 'Ropa interior y prendas para dormir.'),
+('Ropa Formal', 'Trajes, blazers, camisas elegantes y vestidos de gala.'),
+('Ropa Casual', 'Prendas diarias y cómodas para uso cotidiano.'),
+('Deportivos de Moda', 'Ropa y calzado deportivo con estilo.'),
+('Bisutería Artesanal', 'Accesorios hechos a mano con materiales naturales.'),
+('Ropa de Temporada', 'Colecciones especiales según la estación.'),
+('Moda Juvenil', 'Estilos frescos y modernos para jóvenes.'),
+('Moda Clásica', 'Prendas de corte tradicional y elegancia atemporal.'),
+('Accesorios de Cuero', 'Productos de cuero: bolsos, cinturones y billeteras.'),
+('Complementos de Moda', 'Pequeños detalles que completan el look.');
 
 -- INSERTS PARA PRODUCTOS (20)
-INSERT INTO productos (nombre, descripcion, precio, iva, costo, stock, stock_minimo, sku, fecha_creacion, activo, visto, peso, id_proveedor_fk, id_categoria_fk) VALUES
-('Café Premium Andino 500g', 'Café de origen colombiano, tostado medio y molido, en presentación de 500 gramos.', 18500.00, 19.00, 12000.00, 60, 10, 'SKU001', NOW(), 1, 25, 0.500, 1, 5),
-('Mouse Inalámbrico Logitech M170', 'Mouse óptico inalámbrico con receptor USB y diseño ergonómico.', 52000.00, 19.00, 35000.00, 40, 5, 'SKU002', NOW(), 1, 40, 0.120, 2, 1),
-('Papel Resma Carta 500 Hojas', 'Resma de papel blanco tamaño carta, 75 g/m², ideal para oficina.', 18500.00, 19.00, 12000.00, 80, 10, 'SKU003', NOW(), 1, 55, 2.500, 6, 12),
-('Arroz Premium 5kg', 'Arroz blanco tipo exportación, grano largo, sin impurezas.', 28500.00, 19.00, 19000.00, 50, 8, 'SKU004', NOW(), 1, 20, 5.000, 4, 5),
-('Guantes de Nitrilo Azul (Caja x100)', 'Guantes desechables de nitrilo para uso médico o industrial.', 42000.00, 19.00, 28000.00, 30, 5, 'SKU005', NOW(), 1, 30, 0.800, 5, 17),
-('Detergente Líquido Multiusos 2L', 'Detergente líquido concentrado para limpieza de superficies.', 17500.00, 19.00, 9500.00, 45, 6, 'SKU006', NOW(), 1, 28, 2.000, 13, 2),
-('Tornillos para Madera (Caja x100)', 'Tornillos galvanizados de 1½", resistentes a la oxidación.', 12000.00, 19.00, 7000.00, 90, 10, 'SKU007', NOW(), 1, 22, 1.000, 9, 8),
-('Panel Solar 150W Monocristalino', 'Panel solar con alta eficiencia, ideal para sistemas residenciales.', 420000.00, 19.00, 310000.00, 15, 2, 'SKU008', NOW(), 1, 17, 10.000, 8, 19),
-('Camisa Polo Hombre Talla M', 'Camisa tipo polo de algodón, color azul marino.', 58000.00, 19.00, 35000.00, 35, 5, 'SKU009', NOW(), 1, 19, 0.350, 10, 3),
-('Lámpara LED de Escritorio', 'Lámpara LED con brazo flexible y puerto USB, bajo consumo.', 72000.00, 19.00, 50000.00, 25, 4, 'SKU010', NOW(), 1, 40, 0.800, 2, 19),
-('Queso Mozzarella 1kg', 'Queso mozzarella fresco ideal para pizzas y pastas.', 28500.00, 19.00, 19000.00, 30, 5, 'SKU011', NOW(), 1, 33, 1.000, 11, 5),
-('Tóner HP 12A', 'Cartucho de tóner negro compatible con impresoras HP LaserJet.', 145000.00, 19.00, 110000.00, 12, 2, 'SKU012', NOW(), 1, 25, 0.750, 12, 12),
-('Aspiradora Portátil 1200W', 'Aspiradora compacta para el hogar con filtro lavable.', 240000.00, 19.00, 180000.00, 18, 3, 'SKU013', NOW(), 1, 26, 3.500, 16, 11),
-('Bloque de Madera Pino 2x4', 'Bloques de madera seca y cepillada, ideales para construcción.', 21000.00, 19.00, 14000.00, 60, 10, 'SKU014', NOW(), 1, 15, 2.400, 17, 8),
-('Filete de Pescado Tilapia 1kg', 'Filete fresco empacado al vacío, sin espinas.', 32000.00, 19.00, 22000.00, 20, 3, 'SKU015', NOW(), 1, 20, 1.000, 4, 5),
-('Desinfectante Ambiental 1L', 'Desinfectante antibacterial con aroma cítrico.', 10500.00, 19.00, 6500.00, 75, 8, 'SKU016', NOW(), 1, 48, 1.000, 13, 2),
-('Cable HDMI 2.0 3 Metros', 'Cable HDMI alta velocidad para video y audio HD.', 23000.00, 19.00, 13000.00, 50, 6, 'SKU017', NOW(), 1, 35, 0.250, 2, 1),
-('Impresora Multifuncional Epson L3250', 'Impresora con sistema EcoTank, impresión inalámbrica.', 789000.00, 19.00, 610000.00, 10, 2, 'SKU018', NOW(), 1, 28, 5.000, 12, 12),
-('Aceite Vegetal 3L', 'Aceite comestible 100% vegetal, libre de colesterol.', 18500.00, 19.00, 12500.00, 40, 6, 'SKU019', NOW(), 1, 30, 3.000, 4, 5),
-('Cinta de Embalaje Transparente', 'Cinta adhesiva industrial para empaque de cajas.', 8500.00, 19.00, 5000.00, 100, 15, 'SKU020', NOW(), 1, 52, 0.200, 20, 12);
-
+INSERT INTO productos 
+(nombre, descripcion, precio, iva, costo, stock, stock_minimo, sku, fecha_creacion, activo, visto, peso, id_proveedor_fk, id_categoria_fk)
+VALUES
+('Blusa de Seda Femenina', 'Blusa elegante de seda color marfil con cuello en V.', 95000, 19, 60000, 20, 5, 'SKU001', NOW(), 1, 15, 0.200, 1, 1),
+('Pantalón de Lino Beige', 'Pantalón de lino para dama, corte recto, ideal para clima cálido.', 120000, 19, 80000, 18, 4, 'SKU002', NOW(), 1, 10, 0.400, 2, 1),
+('Camisa Casual Hombre Azul Marino', 'Camisa de algodón para hombre, manga larga y botones frontales.', 110000, 19, 70000, 25, 5, 'SKU003', NOW(), 1, 20, 0.350, 3, 2),
+('Vestido Floral Verano', 'Vestido corto con estampado floral, tela ligera y fresca.', 145000, 19, 95000, 15, 3, 'SKU004', NOW(), 1, 35, 0.300, 1, 1),
+('Chaqueta de Cuero Negra', 'Chaqueta clásica de cuero sintético con cierre frontal.', 280000, 19, 190000, 10, 2, 'SKU005', NOW(), 1, 25, 0.900, 4, 2),
+('Zapatos de Tacón Alto', 'Tacones de charol color rojo, altura 8 cm.', 175000, 19, 115000, 14, 3, 'SKU006', NOW(), 1, 30, 0.800, 5, 3),
+('Tenis Urbanos Unisex', 'Tenis blancos estilo urbano, suela antideslizante.', 220000, 19, 150000, 22, 5, 'SKU007', NOW(), 1, 22, 0.700, 5, 3),
+('Bolso de Mano Cuero', 'Bolso pequeño de cuero genuino color café con cierre metálico.', 195000, 19, 120000, 12, 3, 'SKU008', NOW(), 1, 18, 0.600, 6, 4),
+('Cartera de Tela Bordada', 'Cartera artesanal hecha a mano con bordado floral.', 85000, 19, 55000, 16, 3, 'SKU009', NOW(), 1, 25, 0.400, 6, 4),
+('Collar de Plata con Dije', 'Collar fino de plata con dije en forma de corazón.', 135000, 19, 90000, 20, 4, 'SKU010', NOW(), 1, 28, 0.050, 7, 5),
+('Aretes de Perlas Naturales', 'Par de aretes con perlas naturales y base de plata.', 95000, 19, 60000, 25, 5, 'SKU011', NOW(), 1, 20, 0.030, 7, 5),
+('Pulsera de Cuero Doble', 'Pulsera artesanal de cuero trenzado con broche metálico.', 65000, 19, 40000, 30, 6, 'SKU012', NOW(), 1, 17, 0.060, 7, 5),
+('Perfume Floral Dama 100ml', 'Fragancia floral fresca con notas de jazmín y rosa.', 180000, 19, 120000, 18, 3, 'SKU013', NOW(), 1, 40, 0.300, 8, 6),
+('Perfume Amaderado Hombre 100ml', 'Fragancia masculina con notas amaderadas y cítricas.', 190000, 19, 125000, 20, 4, 'SKU014', NOW(), 1, 42, 0.300, 8, 6),
+('Bufanda de Lana', 'Bufanda gruesa de lana color gris, ideal para invierno.', 78000, 19, 50000, 28, 5, 'SKU015', NOW(), 1, 25, 0.250, 9, 7),
+('Gorra de Algodón Unisex', 'Gorra ajustable 100% algodón, varios colores.', 55000, 19, 35000, 35, 6, 'SKU016', NOW(), 1, 20, 0.150, 9, 8),
+('Sombrero Panamá Original', 'Sombrero clásico tejido a mano en paja toquilla.', 160000, 19, 100000, 10, 2, 'SKU017', NOW(), 1, 18, 0.200, 10, 8),
+('Reloj de Pulsera Elegante', 'Reloj analógico con correa de cuero y caja metálica.', 250000, 19, 170000, 14, 3, 'SKU018', NOW(), 1, 30, 0.180, 11, 5),
+('Cinturón de Cuero Negro', 'Cinturón de cuero genuino con hebilla metálica.', 88000, 19, 55000, 20, 4, 'SKU019', NOW(), 1, 25, 0.250, 11, 9),
+('Sandalias de Cuero Dama', 'Sandalias cómodas con tiras de cuero y suela antideslizante.', 125000, 19, 85000, 16, 3, 'SKU020', NOW(), 1, 20, 0.500, 5, 3);
 
 -- INSERTS PARA CLIENTES (20)
 INSERT INTO clientes (nombre, apellido, email, telefono_contacto, contrasena, fecha_registro, fecha_nacimiento, id_barrio_fk, total_gastado) VALUES
 ('Juan', 'Pipo', 'juan.pipo1@mail.com', '300000001', 'pass123', NOW(), '1990-05-10', 1, 150.00),
-('Ana', 'Lecoq', 'ana.lecoq2@mail.com', '300000002', 'pass123', NOW(), '1988-08-20', 2, 200.00),
-('Luis', 'Newton', 'luis.newton3@mail.com', '300000003', 'pass123', NOW(), '1995-02-15', 3, 300.00),
-('Sofía', 'Newt', 'sofia.newt4@mail.com', '300000004', 'pass123', NOW(), '1992-09-07', 4, 120.50),
-('Carlos', 'Blanco', 'carlos.blanco5@mail.com', '300000005', 'pass123', NOW(), '1987-10-11', 5, 500.00),
-('Sebastian', 'Montoya', 'sebastian.montoya6@mail.com', '300000006', 'pass123', NOW(), '1999-12-01', 6, 250.00),
-('Pedro', 'Sánchez', 'pedro.sanchez7@mail.com', '300000007', 'pass123', NOW(), '1989-06-29', 7, 175.00),
-('Lucía', 'Hernández', 'lucia.hernandez8@mail.com', '300000008', 'pass123', NOW(), '1996-03-03', 8, 220.00),
-('Miguel', 'Castro', 'miguel.castro9@mail.com', '300000009', 'pass123', NOW(), '1985-01-21', 9, 350.00),
-('Laura', 'Gómez', 'laura.gomez10@mail.com', '300000010', 'pass123', NOW(), '2000-04-14', 10, 90.00),
-('Diego', 'Morales', 'diego.morales11@mail.com', '300000011', 'pass123', NOW(), '1993-07-16', 11, 400.00),
-('Valentina', 'Flores', 'valentina.flores12@mail.com', '300000012', 'pass123', NOW(), '1997-11-09', 12, 320.40),
-('Tatiana', 'Ruiz', 'tatiana.ruiz13@mail.com', '300000013', 'pass123', NOW(), '1986-12-25', 13, 180.00),
-('Paula', 'Ortiz', 'paula.ortiz14@mail.com', '300000014', 'pass123', NOW(), '1991-05-05', 14, 230.00),
-('Brandon', 'Blanco', 'brandon.blanco15@mail.com', '300000015', 'pass123', NOW(), '1994-09-17', 15, 280.00),
-('Camila', 'Vargas', 'camila.vargas16@mail.com', '300000016', 'pass123', NOW(), '1998-10-30', 16, 350.00),
-('Ángel', 'Suárez', 'angel.suarez17@mail.com', '300000017', 'pass123', NOW(), '1987-04-08', 17, 420.00),
-('Daniela', 'Molina', 'daniela.molina18@mail.com', '300000018', 'pass123', NOW(), '1995-02-18', 18, 150.00),
-('Felipe', 'Guerra', 'felipe.guerra19@mail.com', '300000019', 'pass123', NOW(), '1989-08-01', 19, 290.90),
-('Alejandra', 'Blanco', 'alejandra.blanco20@mail.com', '300000020', 'pass123', NOW(), '1993-03-10', 20, 510.00);
+('Ana', 'Lecoq', 'ana.lecoq2@mail.com', '300000002', 'Ana2025', NOW(), '1988-08-20', 2, 200.00),
+('Luis', 'Newton', 'luis.newton3@mail.com', '300000003', 'Lui$Newton1', NOW(), '1995-02-15', 3, 300.00),
+('Sofía', 'Newt', 'sofia.newt4@mail.com', '300000004', 'Sofi4fun!', NOW(), '1992-09-07', 4, 120.50),
+('Carlos', 'Blanco', 'carlos.blanco5@mail.com', '300000005', 'carlos87', NOW(), '1987-10-11', 5, 500.00),
+('Sebastian', 'Montoya', 'sebastian.montoya6@mail.com', '300000006', 'Seb2025$', NOW(), '1999-12-01', 6, 250.00),
+('Pedro', 'Sánchez', 'pedro.sanchez7@mail.com', '300000007', 'PedroS123', NOW(), '1989-06-29', 7, 175.00),
+('Lucía', 'Hernández', 'lucia.hernandez8@mail.com', '300000008', 'Lucia!H8', NOW(), '1996-03-03', 8, 220.00),
+('Miguel', 'Castro', 'miguel.castro9@mail.com', '300000009', 'miguel09', NOW(), '1985-01-21', 9, 350.00),
+('Laura', 'Gómez', 'laura.gomez10@mail.com', '300000010', 'LauraG20', NOW(), '2000-04-14', 10, 90.00),
+('Diego', 'Morales', 'diego.morales11@mail.com', '300000011', 'DiegoM@11', NOW(), '1993-07-16', 11, 400.00),
+('Valentina', 'Flores', 'valentina.flores12@mail.com', '300000012', 'ValenF123', NOW(), '1997-11-09', 12, 320.40),
+('Tatiana', 'Ruiz', 'tatiana.ruiz13@mail.com', '300000013', 'TatiRu!z', NOW(), '1986-12-25', 13, 180.00),
+('Paula', 'Ortiz', 'paula.ortiz14@mail.com', '300000014', 'Paula89', NOW(), '1991-05-05', 14, 230.00),
+('Brandon', 'Blanco', 'brandon.blanco15@mail.com', '300000015', 'B!randon15', NOW(), '1994-09-17', 15, 280.00),
+('Camila', 'Vargas', 'camila.vargas16@mail.com', '300000016', 'Camila2025', NOW(), '1998-10-30', 16, 350.00),
+('Ángel', 'Suárez', 'angel.suarez17@mail.com', '300000017', 'AngelS@87', NOW(), '1987-04-08', 17, 420.00),
+('Daniela', 'Molina', 'daniela.molina18@mail.com', '300000018', 'Dani123', NOW(), '1995-02-18', 18, 150.00),
+('Felipe', 'Guerra', 'felipe.guerra19@mail.com', '300000019', 'Fel!pe19', NOW(), '1989-08-01', 19, 290.90),
+('Alejandra', 'Blanco', 'alejandra.blanco20@mail.com', '300000020', 'AleBlanco20', NOW(), '1993-03-10', 20, 510.00);
 
 -- INSERTS PARA SUCURSALES (20)
 INSERT INTO sucursales (nombre, direccion, telefono, id_barrio_fk) VALUES
-('Sucursal Principal Cabecera', 'Cra 35 #48-22, Cabecera del Llano', '6076432201', 1),
-('Sucursal Cañaveral', 'Calle 30 #28-15, Cañaveral', '6076521198', 2),
-('Sucursal Provenza', 'Cra 21 #110-05, Portales de Provenza', '3174526890', 3),
-('Sucursal Real de Minas', 'Av. La Rosita #21-80, Real de Minas', '6076413322', 4),
-('Sucursal Centro', 'Calle 36 #17-22, Centro', '6076309088', 5),
-('Sucursal San Francisco', 'Cra 22 #15-09, San Francisco', '6076439875', 6),
-('Sucursal Girón Central', 'Calle 28 #24-10, Girón', '6076467453', 7),
-('Sucursal Floridablanca Norte', 'Av. Bucarica #10-20, Floridablanca', '6076483921', 8),
-('Sucursal Lagos del Cacique', 'Calle 54 #34-09, Lagos del Cacique', '6076420109', 9),
-('Sucursal Mutis', 'Cra 16 #64-25, Mutis', '6076435012', 10),
-('Sucursal La Victoria', 'Cra 27 #45-30, La Victoria', '6076440820', 11),
-('Sucursal La Cumbre', 'Calle 30 #14-18, La Cumbre', '6076523401', 12),
-('Sucursal Sotomayor', 'Cra 33 #52-17, Sotomayor', '6076451976', 13),
-('Sucursal San Alonso', 'Calle 14 #26-32, San Alonso', '6076465013', 14),
-('Sucursal Morrorico', 'Calle 6 #12-45, Morrorico', '6076468751', 15),
-('Sucursal El Bosque', 'Cra 18 #36-20, El Bosque', '6076472089', 16),
-('Sucursal Kennedy', 'Calle 9 #28-19, Kennedy', '6076476592', 17),
-('Sucursal La Salle', 'Cra 29 #56-04, La Salle', '6076480021', 18),
-('Sucursal San Luis', 'Calle 60 #15-33, San Luis', '6076483580', 19),
-('Sucursal Altos de Cabecera', 'Cra 38 #45-50, Altos de Cabecera', '6076492045', 20);
+('Boutique Eleganza Bogotá', 'Cra 15 #93-20', '6015551001', 1),
+('Boutique Estilo & Moda Medellín', 'Cra 43A #8-15', '6045552001', 4),
+('Boutique Rosa Chic Cali', 'Av 6N #21-45', '6025553001', 8),
+('Boutique Marina Barranquilla', 'Cra 54 #72-10', '6055554001', 10),
+('Boutique Glam Bucaramanga', 'Cl 36 #41-50', '6075555001', 13),
+('Boutique Bocagrande Cartagena', 'Cra 3 #9-25', '6055556001', 16),
+('Boutique Riviera Pereira', 'Av. Circunvalar #18-30', '6065557001', 17),
+('Boutique Manizales Chic', 'Cl 22 #23-45', '6065558001', 18),
+('Boutique Rodadero Style', 'Cl 6 #1-30', '6055559001', 19),
+('Boutique Cúcuta Moda', 'Av. Libertadores #12E-30', '6075559011', 20);
+
 
 -- INSERTS PARA VENTAS (20)
 INSERT INTO ventas (fecha_venta, estado, total, id_cliente_fk, id_sucursal_fk)
@@ -433,22 +413,29 @@ VALUES
 ('2025-01-12 14:58:00', 'Procesando', 199.00, 3, 2),
 ('2025-01-12 22:11:55', 'Enviado', 88.60, 5, 3),
 ('2025-01-13 13:47:33', 'Entregado', 412.40, 4, 1),
-('2025-01-13 19:26:17', 'Cancelado', 27.99, 2, 2);
-
+('2025-01-13 19:26:17', 'Cancelado', 27.99, 2, 2),
+('2025-01-05 14:23:10', 'Entregado', 89.99, 1, 1),
+('2025-03-12 11:15:40', 'Entregado', 120.50, 1, 1),
+('2025-04-09 09:30:25', 'Entregado', 99.00, 1, 1),
+('2025-02-10 17:42:55', 'Entregado', 65.00, 2, 1),
+('2025-05-03 13:08:20', 'Entregado', 210.99, 2, 1),
+('2025-01-22 08:10:45', 'Entregado', 150.00, 3, 2),
+('2025-02-18 10:55:12', 'Entregado', 200.00, 3, 2),
+('2025-06-05 19:20:33', 'Entregado', 180.00, 3, 2),
+('2025-03-01 12:50:17', 'Entregado', 300.00, 4, 2),
+('2025-07-14 16:22:09', 'Entregado', 125.00, 4, 2),
+('2025-04-10 15:00:00', 'Entregado', 50.00, 5, 3),
+('2025-05-18 18:45:33', 'Entregado', 95.00, 5, 3),
+('2025-08-02 09:25:40', 'Entregado', 130.00, 5, 3);
 
 
 -- INSERTS PARA DETALLE_VENTAS (5)
-INSERT INTO detalle_ventas (id_venta_fk, id_producto_fk, cantidad, precio_unitario_congelado, iva_porcentaje_aplicado, subtotal, total_linea)
-VALUES
-(1, 1, 2, 15.00, 19.00, 30.00, 35.70),
-(1, 3, 1, 59.99, 19.00, 59.99, 71.39),
-(2, 2, 1, 120.00, 19.00, 120.00, 142.80),
-(2, 5, 1,  9.50, 19.00,  9.50, 11.31),
-(3, 4, 3, 10.00, 19.00, 30.00, 35.70),
-(4, 1, 1, 15.00, 19.00, 15.00, 17.85),
-(4, 3, 2, 59.99, 19.00, 119.98, 142.78),
-(4, 5, 4,  9.50, 19.00, 38.00, 45.22),
-(5, 2, 1, 120.00, 19.00, 120.00, 142.80);
+INSERT INTO ventas (id_cliente_fk, id_sucursal_fk, fecha_venta, total) VALUES
+(1, 1, '2025-01-05 14:23:10', 107.09),  
+(2, 2, '2025-01-06 16:32:25', 154.11),   
+(3, 3, '2025-01-07 18:49:12', 35.70),    
+(4, 4, '2025-01-08 12:05:45', 205.85),   
+(5, 5, '2025-01-09 09:43:30', 142.80); 
 
 -- INSERTS PARA ENVIOS (5)
 INSERT INTO envios (direccion_envio, codigo_rastreo, fecha_envio, fecha_entrega, estado_envio, id_venta_fk, id_barrio_fk)
@@ -500,7 +487,7 @@ VALUES
 
 
 -- INSERTS PRODUCTOS CARRITO
-INSERT INTO productos_carritos (id_producto_fk, id_carritos_fk, cantidad) VALUES
+INSERT INTO productos_carritos (id_producto_fk, id_carrito_fk, cantidad) VALUES
 (1, 1, 2),
 (2, 1, 1),
 (3, 2, 1),
