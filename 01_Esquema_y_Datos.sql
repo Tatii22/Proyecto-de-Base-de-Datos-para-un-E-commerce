@@ -152,16 +152,6 @@ CREATE TABLE promociones_producto (
   FOREIGN KEY (id_promocion_fk) REFERENCES promociones(id_promocion)
 ) ENGINE=InnoDB;
 
-CREATE TABLE auditoria_precios (
-  id_log INT AUTO_INCREMENT PRIMARY KEY,
-  precio_anterior DECIMAL(10,2) CHECK (precio_anterior >= 0),
-  precio_nuevo DECIMAL(10,2) CHECK (precio_nuevo >= 0),
-  fecha_cambio DATETIME DEFAULT CURRENT_TIMESTAMP,
-  usuario VARCHAR(100),
-  id_producto_fk INT NOT NULL,
-  FOREIGN KEY (id_producto_fk) REFERENCES productos(id_producto)
-) ENGINE=InnoDB;
-
 CREATE TABLE usuarios_bd (
   id_usuario INT AUTO_INCREMENT PRIMARY KEY,
   nombre_usuario VARCHAR(45) NOT NULL UNIQUE,
@@ -169,18 +159,6 @@ CREATE TABLE usuarios_bd (
   fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   activo TINYINT NOT NULL CHECK (activo IN (0,1))
 ) ENGINE=InnoDB;
-
-CREATE TABLE auditoria_clientes (
-  id_auditoria INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  accion ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
-  fecha_evento DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  usuario VARCHAR(100),
-  id_cliente_fk INT NOT NULL,
-  id_usuario_fk INT NOT NULL,
-  FOREIGN KEY (id_cliente_fk) REFERENCES clientes(id_cliente),
-  FOREIGN KEY (id_usuario_fk) REFERENCES usuarios_bd(id_usuario)
-) ENGINE=InnoDB;
-
 
 CREATE TABLE alertas_stock (
     id_alerta INT AUTO_INCREMENT PRIMARY KEY,
@@ -223,6 +201,130 @@ CREATE TABLE reseñas (
   FOREIGN KEY (id_producto_fk) REFERENCES productos(id_producto),
   FOREIGN KEY (id_cliente_fk) REFERENCES clientes(id_cliente)
 ) ENGINE=InnoDB;
+
+CREATE TABLE intentos_fallidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50),
+    host VARCHAR(50),
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    mensaje VARCHAR(255)
+) ENGINE=InnoDB;
+
+    CREATE TABLE IF NOT EXISTS historial_estado_pedidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    estado_anterior VARCHAR(50),
+    estado_nuevo VARCHAR(50),
+    fecha_cambio DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE referidos (
+    id_referido INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente_fk INT NOT NULL,
+    id_referente_fk INT NOT NULL,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cliente_fk) REFERENCES clientes(id_cliente),
+    FOREIGN KEY (id_referente_fk) REFERENCES clientes(id_cliente)
+);
+-- Creo la tabla si no existe
+    CREATE TABLE IF NOT EXISTS reportes_semanales (
+        id_reporte INT AUTO_INCREMENT PRIMARY KEY,
+        fecha_inicio DATE NOT NULL,
+        fecha_fin DATE NOT NULL,
+        total_ventas DECIMAL(10,2) NOT NULL,
+        numero_ventas INT NOT NULL,
+        fecha_generacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB;
+
+-- Crear tabla de archivo si no existe
+    CREATE TABLE IF NOT EXISTS auditoria_precios_archivo LIKE auditoria_precios;
+    CREATE TABLE IF NOT EXISTS permisos_log_archivo LIKE permisos_log;
+
+-- Crear tabla de niveles de lealtad si no existe
+    CREATE TABLE IF NOT EXISTS niveles_lealtad (
+        id_nivel INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(50) NOT NULL,
+        total_gastado_minimo DECIMAL(10,2) NOT NULL,
+        numero_compras_minimo INT NOT NULL,
+        descuento_porcentaje DECIMAL(5,2) NOT NULL DEFAULT 0
+    ) ENGINE=InnoDB;
+-- Crear tabla de lista de reorden si no existe
+    CREATE TABLE IF NOT EXISTS lista_reorden (
+        id_reorden INT AUTO_INCREMENT PRIMARY KEY,
+        id_producto INT NOT NULL,
+        nombre_producto VARCHAR(50) NOT NULL,
+        stock_actual DECIMAL(10,2) NOT NULL,
+        stock_minimo DECIMAL(10,2) NOT NULL,
+        cantidad_sugerida INT NOT NULL,
+        fecha_generacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        estado ENUM('Pendiente', 'Procesada', 'Cancelada') NOT NULL DEFAULT 'Pendiente',
+        FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+    ) ENGINE=InnoDB;
+    
+CREATE TABLE IF NOT EXISTS ventas_resumen_diario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATE NOT NULL,
+    total_ventas DECIMAL(12,2) NOT NULL,
+    cantidad_transacciones INT NOT NULL,
+    cantidad_productos_vendidos INT NOT NULL,
+    UNIQUE (fecha)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS auditoria_inconsistencias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    descripcion VARCHAR(255) NOT NULL,
+    registros_afectados INT NOT NULL
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS greetings_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT,
+    fecha_envio DATETIME,
+    mensaje VARCHAR(255)
+);
+CREATE TABLE IF NOT EXISTS rankings_productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto_fk INT NOT NULL,
+    total_vendido INT NOT NULL DEFAULT 0,
+    calificacion_promedio DECIMAL(3,2) DEFAULT 0,
+    ranking_ventas INT,
+    ranking_valoracion INT,
+    fecha_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_producto_fk) REFERENCES productos(id_producto)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS backup_clientes LIKE clientes;
+CREATE TABLE IF NOT EXISTS backup_pedidos LIKE pedidos;
+CREATE TABLE IF NOT EXISTS kpis_mensuales (
+    id_kpi INT AUTO_INCREMENT PRIMARY KEY,
+    mes INT NOT NULL,
+    anio INT NOT NULL,
+    total_ventas DECIMAL(15,2),
+    total_clientes INT,
+    promedio_venta DECIMAL(15,2),
+    fecha_calculo DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS historial_tamano_db (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    nombre_db VARCHAR(100),
+    tamano_mb DECIMAL(10,2)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS historial_actividad_sospechosa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT,
+    tipo_actividad VARCHAR(100),
+    detalle TEXT,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS reporte_rendimiento_proveedores (
+    id_reporte INT AUTO_INCREMENT PRIMARY KEY,
+    id_proveedor INT,
+    total_productos_vendidos INT,
+    total_ingresos DECIMAL(15,2),
+    fecha_reporte DATE,
+    CONSTRAINT fk_reporte_proveedor FOREIGN KEY (id_proveedor) REFERENCES proveedores(id_proveedor)
+) ENGINE=InnoDB;
+
 
 -- INSERTS
 
@@ -604,9 +706,3 @@ VALUES
 (5, 'Calidad premium, excelente compra.', 4, 1),
 (2, 'El vendedor no respondió mis dudas.', 5, 3);
 
--- TABLAS SIN INSERTTSS
--- PERMISOS_LOG
--- VENTAS_ARCHIVO
--- ALERTAS_STOCK
--- AUDITORIA_CLIENTES
--- AUDITORIA_PRECIOS
