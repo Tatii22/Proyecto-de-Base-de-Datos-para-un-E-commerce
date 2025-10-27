@@ -393,27 +393,14 @@ END;
 
 SET GLOBAL event_scheduler = ON;
 
--- Ejemplo: tabla usuarios_soft_delete
--- CREATE TABLE usuarios_soft_delete (
---     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
---     nombre VARCHAR(50),
---     borrado TINYINT DEFAULT 0,
---     fecha_eliminado DATETIME
--- );
-
--- Evento semanal que elimina registros soft deleted
 CREATE EVENT IF NOT EXISTS evt_purge_soft_deleted_records_weekly
 ON SCHEDULE EVERY 1 WEEK
 STARTS '2025-11-01 00:00:00'
 DO
 BEGIN
-    -- Eliminar usuarios marcados como borrados hace más de 30 días
+
     DELETE FROM usuarios_soft_delete
     WHERE borrado = 1
       AND fecha_eliminado <= NOW() - INTERVAL 30 DAY;
 
-    -- Puedes repetir para otras tablas, por ejemplo:
-    -- DELETE FROM productos_soft_delete
-    -- WHERE borrado = 1
-    --   AND fecha_eliminado <= NOW() - INTERVAL 30 DAY;
 END;
