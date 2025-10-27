@@ -307,13 +307,7 @@ GRANT SELECT ON proyecto_ecommerce.productos TO 'usuario_sucursal'@'localhost';
 
 
 -- Auditar todos los intentos de inicio de sesión fallidos en la base de datos.
-CREATE TABLE intentos_fallidos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(50),
-    host VARCHAR(50),
-    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-    mensaje VARCHAR(255)
-) ENGINE=InnoDB;
+
 DELIMITER $$
 
 CREATE PROCEDURE sp_login(IN p_usuario VARCHAR(50), IN p_password VARCHAR(100))

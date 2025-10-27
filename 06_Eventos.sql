@@ -34,16 +34,6 @@ BEGIN
     WHERE fecha_venta BETWEEN v_fecha_inicio AND v_fecha_fin
     AND estado != 'Cancelado';
     
-    -- Creo la tabla si no existe
-    CREATE TABLE IF NOT EXISTS reportes_semanales (
-        id_reporte INT AUTO_INCREMENT PRIMARY KEY,
-        fecha_inicio DATE NOT NULL,
-        fecha_fin DATE NOT NULL,
-        total_ventas DECIMAL(10,2) NOT NULL,
-        numero_ventas INT NOT NULL,
-        fecha_generacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB;
-    
     -- Guardo el reporte
     INSERT INTO reportes_semanales (fecha_inicio, fecha_fin, total_ventas, numero_ventas)
     VALUES (v_fecha_inicio, v_fecha_fin, v_total_ventas, v_numero_ventas);
@@ -96,9 +86,7 @@ BEGIN
     
     SET v_fecha_archivo = DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
     
-    -- Crear tabla de archivo si no existe
-    CREATE TABLE IF NOT EXISTS auditoria_precios_archivo LIKE auditoria_precios;
-    CREATE TABLE IF NOT EXISTS permisos_log_archivo LIKE permisos_log;
+    
     
     -- Archivar logs de precios antiguos
     INSERT INTO auditoria_precios_archivo 
@@ -158,14 +146,7 @@ DO
 BEGIN
     DECLARE v_clientes_actualizados INT DEFAULT 0;
     
-    -- Crear tabla de niveles de lealtad si no existe
-    CREATE TABLE IF NOT EXISTS niveles_lealtad (
-        id_nivel INT AUTO_INCREMENT PRIMARY KEY,
-        nombre VARCHAR(50) NOT NULL,
-        total_gastado_minimo DECIMAL(10,2) NOT NULL,
-        numero_compras_minimo INT NOT NULL,
-        descuento_porcentaje DECIMAL(5,2) NOT NULL DEFAULT 0
-    ) ENGINE=InnoDB;
+    
     
     -- Insertar niveles si no existen
     INSERT IGNORE INTO niveles_lealtad (nombre, total_gastado_minimo, numero_compras_minimo, descuento_porcentaje)
@@ -202,18 +183,6 @@ DO
 BEGIN
     DECLARE v_productos_reorden INT DEFAULT 0;
     
-    -- Crear tabla de lista de reorden si no existe
-    CREATE TABLE IF NOT EXISTS lista_reorden (
-        id_reorden INT AUTO_INCREMENT PRIMARY KEY,
-        id_producto INT NOT NULL,
-        nombre_producto VARCHAR(50) NOT NULL,
-        stock_actual DECIMAL(10,2) NOT NULL,
-        stock_minimo DECIMAL(10,2) NOT NULL,
-        cantidad_sugerida INT NOT NULL,
-        fecha_generacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        estado ENUM('Pendiente', 'Procesada', 'Cancelada') NOT NULL DEFAULT 'Pendiente',
-        FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
-    ) ENGINE=InnoDB;
     
     -- Limpiar lista anterior
     DELETE FROM lista_reorden WHERE estado = 'Pendiente';
@@ -282,14 +251,7 @@ END$$
 DELIMITER ;
 
 -- evt_aggregate_daily_sales_data: Agrega los datos de ventas del día en una tabla de resumen para acelerar reportes.
-CREATE TABLE IF NOT EXISTS ventas_resumen_diario (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    fecha DATE NOT NULL,
-    total_ventas DECIMAL(12,2) NOT NULL,
-    cantidad_transacciones INT NOT NULL,
-    cantidad_productos_vendidos INT NOT NULL,
-    UNIQUE (fecha)
-) ENGINE=InnoDB;
+
 
 
 DELIMITER $$
@@ -319,12 +281,6 @@ END$$
 DELIMITER ;
 
 -- evt_check_data_consistency_nightly: Busca inconsistencias en los datos (ej. ventas sin detalles).
-CREATE TABLE IF NOT EXISTS auditoria_inconsistencias (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    descripcion VARCHAR(255) NOT NULL,
-    registros_afectados INT NOT NULL
-) ENGINE=InnoDB;
 
 SET GLOBAL event_scheduler = ON;
 
@@ -376,12 +332,7 @@ DELIMITER ;
 
 -- evt_send_birthday_greetings_daily: Genera una lista de clientes que cumplen años para enviarles un cupón.
 -- Crear tabla auxiliar para almacenar los envíos de felicitaciones
-CREATE TABLE IF NOT EXISTS greetings_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_cliente INT,
-    fecha_envio DATETIME,
-    mensaje VARCHAR(255)
-);
+
 
 
 SET GLOBAL event_scheduler = ON;
@@ -397,16 +348,6 @@ FROM clientes
 WHERE DATE_FORMAT(fecha_nacimiento, '%m-%d') = DATE_FORMAT(CURDATE(), '%m-%d');
 
 -- evt_update_product_rankings_hourly: Actualiza una tabla con el ranking de los productos más populares.
-CREATE TABLE IF NOT EXISTS rankings_productos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_producto_fk INT NOT NULL,
-    total_vendido INT NOT NULL DEFAULT 0,
-    calificacion_promedio DECIMAL(3,2) DEFAULT 0,
-    ranking_ventas INT,
-    ranking_valoracion INT,
-    fecha_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_producto_fk) REFERENCES productos(id_producto)
-) ENGINE=InnoDB;
 
 SET GLOBAL event_scheduler = ON;
 
@@ -484,15 +425,7 @@ END;
 
 SET GLOBAL event_scheduler = ON;
 
-CREATE TABLE IF NOT EXISTS kpis_mensuales (
-    id_kpi INT AUTO_INCREMENT PRIMARY KEY,
-    mes INT NOT NULL,
-    anio INT NOT NULL,
-    total_ventas DECIMAL(15,2),
-    total_clientes INT,
-    promedio_venta DECIMAL(15,2),
-    fecha_calculo DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+
 
 CREATE EVENT IF NOT EXISTS evt_calculate_monthly_kpis
 ON SCHEDULE EVERY 1 MONTH
@@ -540,12 +473,7 @@ END;
 SET GLOBAL event_scheduler = ON;
 
 -- Crear la tabla para almacenar el historial de tamaño
-CREATE TABLE IF NOT EXISTS historial_tamano_db (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    nombre_db VARCHAR(100),
-    tamano_mb DECIMAL(10,2)
-) ENGINE=InnoDB;
+
 
 
 CREATE EVENT IF NOT EXISTS evt_log_database_size_weekly
@@ -570,14 +498,7 @@ END;
 
 SET GLOBAL event_scheduler = ON;
 
-CREATE TABLE IF NOT EXISTS historial_actividad_sospechosa (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_cliente INT,
-    tipo_actividad VARCHAR(100),
-    detalle TEXT,
-    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
-) ENGINE=InnoDB;
+
 
 
 CREATE EVENT IF NOT EXISTS evt_detect_fraudulent_activity_hourly
@@ -598,14 +519,7 @@ END;
 -- Activar el scheduler si no está activo
 SET GLOBAL event_scheduler = ON;
 
-CREATE TABLE IF NOT EXISTS reporte_rendimiento_proveedores (
-    id_reporte INT AUTO_INCREMENT PRIMARY KEY,
-    id_proveedor INT,
-    total_productos_vendidos INT,
-    total_ingresos DECIMAL(15,2),
-    fecha_reporte DATE,
-    CONSTRAINT fk_reporte_proveedor FOREIGN KEY (id_proveedor) REFERENCES proveedores(id_proveedor)
-) ENGINE=InnoDB;
+
 
 CREATE EVENT IF NOT EXISTS evt_generate_supplier_performance_report_monthly
 ON SCHEDULE EVERY 1 MONTH

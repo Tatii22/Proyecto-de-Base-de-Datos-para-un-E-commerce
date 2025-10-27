@@ -306,13 +306,7 @@ SELECT id_venta, total FROM ventas;
 
 
 -- trg_log_order_status_change: Audita cada cambio de estado en un pedido (ej. de 'Procesando' a 'Enviado').
-    CREATE TABLE IF NOT EXISTS historial_estado_pedidos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
-    estado_anterior VARCHAR(50),
-    estado_nuevo VARCHAR(50),
-    fecha_cambio DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+
 
 DELIMITER $$
 
@@ -481,14 +475,7 @@ SELECT id_cliente, nombre, fecha_ultimo_pedido
 FROM clientes
 WHERE id_cliente = 1;
 -- trg_prevent_self_referral: Impide que un cliente se referencie a sí mismo en un programa de referidos.
-CREATE TABLE referidos (
-    id_referido INT AUTO_INCREMENT PRIMARY KEY,
-    id_cliente_fk INT NOT NULL,
-    id_referente_fk INT NOT NULL,
-    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_cliente_fk) REFERENCES clientes(id_cliente),
-    FOREIGN KEY (id_referente_fk) REFERENCES clientes(id_cliente)
-);
+
 DELIMITER $$
 
 CREATE TRIGGER trg_prevent_self_referral
