@@ -6,16 +6,17 @@ DETERMINISTIC
 BEGIN
 DECLARE v_costo DECIMAL(10,2);
 DECLARE v_total_rentabilidad DECIMAL(10,2);
+
 SELECT costo 
 INTO v_costo 
 FROM productos
-WHERE id_producto = p_id_producto;
-
+WHERE id_producto = p_id_producto
+LIMIT 1;
 SELECT 
-    SUM((dv.precio_unitario_congelado - v_costo) * dv.cantidad)
+SUM((dv.precio_unitario_congelado - v_costo) * dv.cantidad)
 INTO v_total_rentabilidad
 FROM detalle_ventas dv
-WHERE dv.id_producto = p_id_producto;
+WHERE dv.id_producto_fk = p_id_producto;
 
 RETURN IFNULL(v_total_rentabilidad, 0);
 END $$
