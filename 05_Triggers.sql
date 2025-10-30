@@ -3,6 +3,57 @@
 
 
 USE `proyecto_ecommerce`;
+-- Sebastian Montoya Ochoa Examen trg_audit_cliente_after_update
+DELIMITER $$
+CREATE TRIGGER trg_audit_cliente_after_update
+    AFTER UPDATE ON clientes
+    FOR EACH ROW 
+BEGIN
+    IF OLD.email != NEW.email THEN
+        INSERT INTO auditoria_clientes (
+            id_cliente,
+            campo_modificado,
+            valor_antiguo,
+            valor_nuevo,
+            fecha_modificacion
+        ) VALUES(
+            OLD.id_cliente,
+            'email',
+            OLD.email,
+            NEW.email,
+            NOW()
+        );
+        END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER trg_audit_direc_env_after_update
+    AFTER UPDATE ON envios
+    FOR EACH ROW 
+BEGIN
+    IF OLD.direccion_envio != NEW.direccion_envio THEN
+        INSERT INTO auditoria_clientes (
+            id_envio,
+            campo_modificado,
+            valor_antiguo,
+            valor_nuevo,
+            fecha_modificacion
+        ) VALUES(
+            OLD.id_envio,
+            'direccion_envio',
+            OLD.direccion_envio,
+            NEW.direccion_envio,
+            NOW()
+        );
+        END IF;
+END$$
+DELIMITER ;
+
+
+
+
+
 
 -- 1. trg_audit_precio_producto_after_update
 -- Este trigger guarda cuando cambio el precio de un producto

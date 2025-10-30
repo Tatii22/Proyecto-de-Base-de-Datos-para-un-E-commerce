@@ -1,7 +1,7 @@
+-- Active: 1761837510819@@172.17.0.3@3306@mysql
 DROP SCHEMA IF EXISTS `proyecto_ecommerce`;
 CREATE SCHEMA IF NOT EXISTS `proyecto_ecommerce` DEFAULT CHARACTER SET utf8;
 USE `proyecto_ecommerce`;
-
 CREATE TABLE paises (
   id_pais INT AUTO_INCREMENT PRIMARY KEY,
   pais VARCHAR(50) NOT NULL
@@ -14,6 +14,8 @@ CREATE TABLE ciudades (
   id_pais_fk INT NOT NULL,
   FOREIGN KEY (id_pais_fk) REFERENCES paises(id_pais)
 ) ENGINE=InnoDB;
+
+
 
 CREATE TABLE barrios (
   id_barrio INT AUTO_INCREMENT PRIMARY KEY,
@@ -268,6 +270,21 @@ CREATE TABLE IF NOT EXISTS ventas_resumen_diario (
     cantidad_productos_vendidos INT NOT NULL,
     UNIQUE (fecha)
 ) ENGINE=InnoDB;
+
+
+
+-- Examen Sebastian Montoya Ochoa
+CREATE TABLE IF NOT EXISTS auditoria_clientes (
+  id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
+  id_cliente INT,
+  id_envio INT,
+  campo_modificado VARCHAR(100) NOT NULL,
+  valor_antiguo VARCHAR(100) NOT NULL, 
+  valor_nuevo VARCHAR(100) NOT NULL,
+  fecha_modificacion DATE DEFAULT NOT NULL
+)
+;
+
 
 CREATE TABLE IF NOT EXISTS auditoria_inconsistencias (
     id INT AUTO_INCREMENT PRIMARY KEY,
