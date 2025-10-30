@@ -1,3 +1,4 @@
+-- Active: 1761666802542@@172.17.0.2@3306@proyecto_ecommerce
 DROP SCHEMA IF EXISTS `proyecto_ecommerce`;
 CREATE SCHEMA IF NOT EXISTS `proyecto_ecommerce` DEFAULT CHARACTER SET utf8;
 USE `proyecto_ecommerce`;
