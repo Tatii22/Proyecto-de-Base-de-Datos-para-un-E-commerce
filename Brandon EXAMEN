@@ -4,22 +4,20 @@ CREATE FUNCTION fn_CalcularRentabilidadProducto(p_id_producto INT)
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
-DECLARE v_precio DECIMAL(10,2);
-DECLARE v_congelado DECIMAL(10,2);
-DECLARE v_return DECIMAL(10,2);
-DECLARE total DECIMAL (10,2);
+DECLARE v_costo DECIMAL(10,2);
+DECLARE v_total_rentabilidad DECIMAL(10,2);
+SELECT costo 
+INTO v_costo 
+FROM productos
+WHERE id_producto = p_id_producto;
 
+SELECT 
+    SUM((dv.precio_unitario_congelado - v_costo) * dv.cantidad)
+INTO v_total_rentabilidad
+FROM detalle_ventas dv
+WHERE dv.id_producto = p_id_producto;
 
-
-SELECT precio INTO v_precio FROM productos;
-SELECT precio_unitario_congelado INTO v_congelado FROM detalle_ventas
-ORDER BY fecha_venta DESC
-LIMIT 1;
-
-SET v_return = v_precio - IFNULL(v_congelado, 0);
-
-
-RETURN v_return;
+RETURN IFNULL(v_total_rentabilidad, 0);
 END $$
 
 DELIMITER;
